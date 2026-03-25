@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tea Tracker</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      padding: 20px;
+    }
+    h2 { margin-bottom: 10px; }
+    #current {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: green;
+    }
+    button {
+      display: block;
+      width: 90%;
+      margin: 6px auto;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      background: #007bff;
+      color: white;
+    }
+    button:disabled {
+      background: grey;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Tea Guy Location</h2>
+<div id="current">Loading...</div>
+
+<!-- Buttons -->
+<button onclick="updateLocation('South block - ground floor')">South block - ground floor</button>
+<button onclick="updateLocation('South block - first floor')">South block - first floor</button>
+<button onclick="updateLocation('South block - second floor')">South block - second floor</button>
+
+<button onclick="updateLocation('Main block - ground floor')">Main block - ground floor</button>
+<button onclick="updateLocation('Main block - first floor')">Main block - first floor</button>
+<button onclick="updateLocation('Main block - second floor')">Main block - second floor</button>
+
+<button onclick="updateLocation('North block - ground floor')">North block - ground floor</button>
+<button onclick="updateLocation('North block - first floor')">North block - first floor</button>
+<button onclick="updateLocation('North block - second floor')">North block - second floor</button>
+
+<button onclick="updateLocation('Decenial block')">Decenial block</button>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyALls3EsOXH-NaeeHUGFNZWHPtT5Rg4FZI",
+    authDomain: "tea-chettan-location.firebaseapp.com",
+    databaseURL: "https://tea-chettan-location-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "tea-chettan-location",
+    storageBucket: "tea-chettan-location.firebasestorage.app",
+    messagingSenderId: "908140682228",
+    appId: "1:908140682228:web:da7c713768b58b0d6f77a1",
+    measurementId: "G-SR9F5QKYV7"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  let lastClickTime = 0;
+  const COOLDOWN = 10000; // 10 seconds
+
+  function updateLocation(place) {
+    const now = Date.now();
+
+    if (now - lastClickTime < COOLDOWN) {
+      alert("Wait a few seconds before updating again.");
+      return;
+    }
+
+    lastClickTime = now;
+
+    db.ref("tea").set({
+      location: place,
+      time: new Date().toLocaleTimeString()
+    });
+  }
+
+  db.ref("tea").on("value", (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      document.getElementById("current").innerText =
+        "📍 " + data.location + "\n⏱ Updated at: " + data.time;
+    }
+  });
+</script>
+
+</body>
+</html>
